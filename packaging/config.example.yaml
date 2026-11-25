@@ -1,0 +1,38 @@
+# /etc/a310ctl/config.yaml - Intel Arc A310 settings, applied by `a310ctl serve`.
+# This default keeps the card at its factory settings and the exporter off.
+# Edit this file while the daemon runs: changes are applied within ~2 seconds.
+# Omit a key or group to leave that setting untouched. Any key, or a whole group,
+# may be set to "factory" to restore the card's factory value.
+# Everything resets to factory when the machine is power-cycled.
+
+device: automatic                  # or a PCI address, e.g. 0000:03:00.0
+socket: /run/a310ctl.sock
+
+exporter:                          # optional Prometheus exporter
+  enabled: false
+  listen: 127.0.0.1:9310           # 0.0.0.0:9310 to allow scraping from other hosts
+  interval: 2                      # seconds between samples, 0.5..60
+
+temperature:
+  limit: factory                   # factory 90; celsius, 60..95
+  fan_curve: factory               # factory: the card's own curve
+  # Replace the line above with one of:
+  # fan_curve: "40:20 55:30 70:60 85:100"   # temperature celsius : duty percent,
+                                            # even count 2..10, last point 100 at <= 95
+  # fan_curve: 60                  # flat curve: constant duty percent, 20..100
+
+power:                             # keep this group: it is how card resets are noticed
+  sustained: factory               # factory 31.25; watts, 10..75
+  burst: factory                   # factory 31.25; watts, 10..75
+  window: factory                  # factory 28; seconds, sustained-limit time window
+
+overclock:
+  unlock: factory                  # factory: locked; true lifts the hidden ~31 W cap
+  # The settings below need "unlock: true" (or no unlock line):
+  # boost: 150                     # megahertz, 0..300 (Intel "Performance Boost")
+  # undervolt: 10                  # millivolts, extra negative offset; test when hot
+  # raw voltage-frequency point instead of boost/undervolt:
+  # frequency: 2450                # megahertz
+  # voltage: 0                     # millivolts target, 0 = stock
+  # voltage_offset: -20            # millivolts, negative = undervolt, magnitude <= 150
+  # voltage_mode: adaptive         # adaptive | fixed

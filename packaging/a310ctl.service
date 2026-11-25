@@ -1,0 +1,16 @@
+[Unit]
+Description=Intel Arc A310 configuration and Prometheus exporter
+After=systemd-modules-load.service
+# Give up after 5 failed starts in 2 minutes (e.g. no card): no endless restart loop.
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/a310ctl serve --config /etc/a310ctl/config.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

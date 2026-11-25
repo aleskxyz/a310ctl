@@ -1,0 +1,54 @@
+# nFPM package definition (deb and rpm). Environment: ARCH (Go arch), VERSION.
+# The binary for that architecture must be at build/a310ctl (nFPM does not expand
+# environment variables in file paths).
+name: a310ctl
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+section: utils
+priority: optional
+maintainer: a310ctl maintainers <a310ctl@localhost>
+license: GPL-3.0-or-later
+description: |
+  Intel Arc A310 control from a YAML file: fan curve, power and temperature limits,
+  overclock/undervolt, with an optional Prometheus exporter.
+
+contents:
+  - src: build/a310ctl
+    dst: /usr/sbin/a310ctl
+    file_info:
+      mode: 0755
+  - src: packaging/a310ctl.service
+    dst: /usr/lib/systemd/system/a310ctl.service
+    file_info:
+      mode: 0644
+  - src: packaging/config.example.yaml
+    dst: /etc/a310ctl/config.yaml
+    type: config|noreplace
+    file_info:
+      mode: 0644
+  - src: README.md
+    dst: /usr/share/doc/a310ctl/README.md
+    file_info:
+      mode: 0644
+  - src: INTERNALS.md
+    dst: /usr/share/doc/a310ctl/INTERNALS.md
+    file_info:
+      mode: 0644
+  - src: DRIVERS.md
+    dst: /usr/share/doc/a310ctl/DRIVERS.md
+    file_info:
+      mode: 0644
+  - src: BENCHMARKS.md
+    dst: /usr/share/doc/a310ctl/BENCHMARKS.md
+    file_info:
+      mode: 0644
+  - src: LICENSE
+    dst: /usr/share/doc/a310ctl/LICENSE
+    file_info:
+      mode: 0644
+
+scripts:
+  postinstall: packaging/scripts/postinstall.sh
+  preremove: packaging/scripts/preremove.sh
+  postremove: packaging/scripts/postremove.sh
